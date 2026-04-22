@@ -1,4 +1,6 @@
 import tldextract
+from typing import List
+from src.models import University
 
 class DomainUtils:
     @staticmethod
@@ -18,3 +20,11 @@ class DomainUtils:
         
         # Fallback for things like 'localhost'
         return extracted.domain
+
+class Processor:
+    @staticmethod
+    def filter_valid(universities: List[University]) -> List[University]:
+        """
+        Filters out universities that have no web_pages.
+        """
+        return [uni for uni in universities if uni.web_pages]
