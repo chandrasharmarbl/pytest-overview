@@ -1,5 +1,6 @@
 import pytest
-from src.client import ApiClient
+import httpx
+from src.client import ApiClient, ApiError
 
 @pytest.mark.asyncio
 async def test_fetch_universities_success(mocker, sample_api_response):
@@ -23,3 +24,17 @@ async def test_fetch_universities_success(mocker, sample_api_response):
     assert universities[0].country == "Canada"
     
     mock_get.assert_called_once_with("http://universities.hipolabs.com/search", params={"country": "Canada"})
+
+@pytest.mark.asyncio
+async def test_fetch_universities_error_handling(mocker):
+    """
+    Test that an httpx.HTTPError is caught and raised as our custom ApiError.
+    """
+    # Arrange: mock httpx.AsyncClient.get to raise an exception
+    mocker.patch("httpx.AsyncClient.get", side_effect=httpx.HTTPError("Mocked timeout or 404"))
+    
+    # Act & Assert
+    with pytest.raises(ApiError) as exc_info:
+        await ApiClient.fetch_universities("Canada")
+    
+    assert "Mocked timeout or 404" in str(exc_info.value)
