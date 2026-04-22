@@ -25,3 +25,39 @@ async def test_fetch_all_countries_concurrency(mocker):
     
     # Ensure it returns a flattened list (in this case empty since we mocked it as empty)
     assert results == []
+
+@pytest.mark.asyncio
+async def test_run_cli_generates_report(mocker, sample_api_response):
+    """
+    Test that run_cli fetches data, filters it, and writes a correct JSON report.
+    """
+    from src.main import run_cli
+    
+    # Arrange
+    universities = [University.from_json(item) for item in sample_api_response]
+    mocker.patch("src.main.fetch_all_countries", return_value=universities)
+    
+    # Mock builtins.open
+    mock_open = mocker.patch("builtins.open", mocker.mock_open())
+    
+    # Act
+    await run_cli(["Canada", "United States"], "test_output.json")
+    
+    # Assert
+    mock_open.assert_called_once_with("test_output.json", "w", encoding="utf-8")
+    
+    # Verify the JSON that was written
+    write_calls = mock_open().write.call_args_list
+    written_content = "".join(call.args[0] for call in write_calls)
+    
+    import json
+    written_json = json.loads(written_content)
+    
+    # The third item (Lindenwood) should be filtered out
+    assert len(written_json) == 2
+    
+    # Verify cleaning
+    assert written_json[0]["name"] == "Marywood University"
+    assert written_json[0]["clean_domain"] == "marywood.edu"
+    assert written_json[1]["name"] == "Cégep de Saint-Jérôme"
+    assert written_json[1]["clean_domain"] == "cstj.qc.ca"
