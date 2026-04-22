@@ -17,10 +17,32 @@ async def fetch_all_countries(countries: List[str]) -> List[University]:
     # Run them concurrently
     results = await asyncio.gather(*tasks)
     
-    # `results` is a list of lists: [[Univ1, Univ2], [Univ3], ...]
-    # We flatten it into a single list: [Univ1, Univ2, Univ3, ...]
+    # We flatten it into a single list
     flattened_results = [uni for sublist in results for uni in sublist]
     return flattened_results
+
+def _generate_report_data(universities: List[University]) -> List[dict]:
+    """
+    Transforms a list of University objects into a list of dictionaries suitable for JSON reporting.
+    Standardizes the domain for each entry.
+    """
+    report = []
+    for uni in universities:
+        clean_domain = DomainUtils.clean(uni.web_pages[0])
+        report.append({
+            "name": uni.name,
+            "country": uni.country,
+            "clean_domain": clean_domain,
+            "original_urls": uni.web_pages
+        })
+    return report
+
+def _save_report(report_data: List[dict], output_file: str) -> None:
+    """
+    Saves the report data to a JSON file.
+    """
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(report_data, f, indent=2, ensure_ascii=False)
 
 async def run_cli(countries: List[str], output_file: str):
     print(f"Fetching data for {len(countries)} countries: {', '.join(countries)}...")
@@ -32,19 +54,9 @@ async def run_cli(countries: List[str], output_file: str):
     print(f"Kept {len(valid_universities)} universities with valid websites.")
     
     print("Standardizing domains and generating report...")
-    report = []
-    for uni in valid_universities:
-        # Standardize the domain using our DomainCleaner on the first web page
-        clean_domain = DomainUtils.clean(uni.web_pages[0])
-        report.append({
-            "name": uni.name,
-            "country": uni.country,
-            "clean_domain": clean_domain,
-            "original_urls": uni.web_pages
-        })
-        
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(report, f, indent=2, ensure_ascii=False)
+    report_data = _generate_report_data(valid_universities)
+    
+    _save_report(report_data, output_file)
     
     print(f"Success! Summary report saved to {output_file}")
 
