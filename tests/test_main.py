@@ -37,8 +37,8 @@ async def test_run_cli_generates_report(mocker, sample_api_response):
     universities = [University.from_json(item) for item in sample_api_response]
     mocker.patch("src.main.fetch_all_countries", return_value=universities)
     
-    # Mock builtins.open
-    mock_open = mocker.patch("builtins.open", mocker.mock_open())
+    # Mock open only in src.main to avoid interfering with tldextract's internal open calls
+    mock_open = mocker.patch("src.main.open", mocker.mock_open())
     
     # Act
     await run_cli(["Canada", "United States"], "test_output.json")
