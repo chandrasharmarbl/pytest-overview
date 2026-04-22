@@ -1,8 +1,8 @@
-# UniStream 🎓
+# UniStream
 
 UniStream is an asynchronous Python CLI tool that aggregates university data from the [HipoLabs Open API](http://universities.hipolabs.com/search). It efficiently fetches, standardizes, filters, and summarizes university information across multiple countries using modern async capabilities.
 
-## Features ✨
+## Features
 
 - **Asynchronous Fetching**: Utilizes `httpx` and `asyncio.gather` for blazing-fast, concurrent API requests.
 - **Robust Filtering**: Automatically filters out institutions that lack valid websites.
@@ -10,7 +10,7 @@ UniStream is an asynchronous Python CLI tool that aggregates university data fro
 - **Strict TDD Pipeline**: Built from the ground up using 100% strict Test-Driven Development (TDD) resulting in a highly robust test suite.
 - **SOLID Architecture**: Designed with decoupled, single-responsibility layers (Models, Clients, Processors, and Orchestrators).
 
-## Getting Started 🚀
+## Getting Started
 
 ### Prerequisites
 - Python 3.9+
@@ -28,7 +28,7 @@ UniStream is an asynchronous Python CLI tool that aggregates university data fro
    pip install -e ".[test]"
    ```
 
-## Usage 💻
+## Usage
 
 Run the CLI tool by passing a list of countries you want to query.
 
@@ -42,15 +42,15 @@ python src/main.py "Canada" "United States" "Mexico" -o summary_report.json
 
 ### Example Output
 ```text
-🚀 Fetching data for 2 countries: Canada, United States...
-✅ Fetched 3584 total universities.
-🧹 Filtering out institutions without websites...
-✅ Kept 3491 universities with valid websites.
-✨ Standardizing domains and generating report...
-🎉 Success! Summary report saved to summary_report.json
+Fetching data for 2 countries: Canada, United States...
+Fetched 3584 total universities.
+Filtering out institutions without websites...
+Kept 3491 universities with valid websites.
+Standardizing domains and generating report...
+Success! Summary report saved to summary_report.json
 ```
 
-## Running the Test Suite 🧪
+## Running the Test Suite
 
 This project is a showcase of strict Test-Driven Development. To run the tests and view the output:
 
@@ -62,7 +62,7 @@ pytest -v
 pytest --cov=src
 ```
 
-## Project Structure 📁
+## Project Structure
 
 ```text
 pytest-overview/
